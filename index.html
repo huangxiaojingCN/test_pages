@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript">
+
+        const presentationRequest = new PresentationRequest(["receiver.html"]);
+
+        // Make this presentation the default one when using the "Cast" browser menu.
+        navigator.presentation.defaultRequest = presentationRequest;
+
+        let presentationConnection;
+
+        document.querySelector('#start').addEventListener('click', function () {
+            log('Starting presentation request...');
+            presentationRequest.start()
+                .then(connection => {
+                    console.log('> Connected to ' + connection.url + ', id: ' + connection.id);
+                })
+                .catch(error => {
+                    console.log('> ' + error.name + ': ' + error.message);
+                });
+        });
+
+        presentationRequest.addEventListener('connectionavailable', function (event) {
+            presentationConnection = event.connection;
+            presentationConnection.addEventListener('close', function () {
+                console.log('> Connection closed.');
+            });
+            presentationConnection.addEventListener('terminate', function () {
+                console.log('> Connection terminated.');
+            });
+            presentationConnection.addEventListener('message', function (event) {
+                console.log('> ' + event.data);
+            });
+        });
+
+        document.querySelector('#sendMessage').addEventListener('click', function () {
+            let message = "Hello,World!"
+            let lang = "en-US"
+            console.log('Sending "' + message + '"...');
+            presentationConnection.send(JSON.stringify({ message, lang }));
+        });
+
+        document.querySelector('#close').addEventListener('click', function () {
+            console.log('Closing connection...');
+            presentationConnection.close();
+        });
+
+        document.querySelector('#terminate').addEventListener('click', function () {
+            console.log('Terminating connection...');
+            presentationConnection.terminate();
+        });
+
+        document.querySelector('#reconnect').addEventListener('click', () => {
+            const presentationId = document.querySelector('#presentationId').value.trim();
+
+            presentationRequest.reconnect(presentationId)
+                .then(connection => {
+                    console.log('Reconnected to ' + connection.id);
+                })
+                .catch(error => {
+                    console.log('Presentation.reconnect() error, ' + error.name + ': ' + error.message);
+                });
+        });
+
+        /* Availability monitoring */
+
+        presentationRequest.getAvailability()
+            .then(availability => {
+                console.log('Available presentation displays: ' + availability.value);
+                availability.addEventListener('change', function () {
+                    console.log('> Available presentation displays: ' + availability.value);
+                });
+            })
+            .catch(error => {
+                console.log('Presentation availability not supported, ' + error.name + ': ' +
+                    error.message);
+            });
+
+    </script>
+</head>
+
+<body>
+    <h2>分屏投射测试</h2>
+    <button id="start">选择投射屏幕</button>
+    <button id="sendMessage">发送消息</button>
+    <button id="close">关闭投射</button>
+    <button id="terminate">终止投射</button>
+</body>
+
+</html>

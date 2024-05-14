@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript">
+        function addConnection(connect) {
+            connection.connectionId = ++connectionIdx;
+            addMessage('New connection #' + connectionIdx);
+
+            connection.addEventListener('message', function (event) {
+                messageIdx++;
+                const data = JSON.parse(event.data);
+                const logString = 'Message ' + messageIdx + ' from connection #' +
+                    connection.connectionId + ': ' + data.message;
+                addMessage(logString, data.lang);
+                connection.send('Received message ' + messageIdx);
+            });
+
+            connection.addEventListener('close', function (event) {
+                addMessage('Connection #' + connection.connectionId + ' closed, reason = ' +
+                    event.reason + ', message = ' + event.message);
+            });
+        }
+
+        function addMessage(content, language) {
+            const listItem = document.createElement("li");
+            if (language) {
+                listItem.lang = language;
+            }
+            listItem.textContent = content;
+            document.querySelector("#message-list").appendChild(listItem);
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (navigator.presentation.receiver) {
+                navigator.presentation.receiver.connectionList.then(list => {
+                    list.connections.map(connection => addConnection(connection));
+                    list.addEventListener('connectionavailable', function (event) {
+                        addConnection(event.connection);
+                    });
+                });
+            }
+        });
+    </script>
+</head>
+
+<body>
+   <ul id="message-list">
+    <li>
+        
+    </li>
+   </ul>
+</body>
+
+</html>
