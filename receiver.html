@@ -3,6 +3,10 @@
 
 <head>
     <script type="text/javascript">
+
+        let connectionIdx = 0;
+        let messageIdx = 0;
+
         function addConnection(connection) {
             connection.connectionId = ++connectionIdx;
             addMessage('New connection #' + connectionIdx);
