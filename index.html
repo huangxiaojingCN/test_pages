@@ -11,7 +11,7 @@
 
         let presentationConnection;
 
-        document.querySelector('#start').addEventListener('click', function () {
+        function start() {
             log('Starting presentation request...');
             presentationRequest.start()
                 .then(connection => {
@@ -20,7 +20,18 @@
                 .catch(error => {
                     console.log('> ' + error.name + ': ' + error.message);
                 });
-        });
+        }
+
+        // document.querySelector('#start').addEventListener('click', function () {
+        //     log('Starting presentation request...');
+        //     presentationRequest.start()
+        //         .then(connection => {
+        //             console.log('> Connected to ' + connection.url + ', id: ' + connection.id);
+        //         })
+        //         .catch(error => {
+        //             console.log('> ' + error.name + ': ' + error.message);
+        //         });
+        // });
 
         presentationRequest.addEventListener('connectionavailable', function (event) {
             presentationConnection = event.connection;
