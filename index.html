@@ -11,28 +11,6 @@
 
         let presentationConnection;
 
-        function start() {
-            console.log('Starting presentation request...');
-            presentationRequest.start()
-                .then(connection => {
-                    console.log('> Connected to ' + connection.url + ', id: ' + connection.id);
-                })
-                .catch(error => {
-                    console.log('> ' + error.name + ': ' + error.message);
-                });
-        }
-
-        // document.querySelector('#start').addEventListener('click', function () {
-        //     log('Starting presentation request...');
-        //     presentationRequest.start()
-        //         .then(connection => {
-        //             console.log('> Connected to ' + connection.url + ', id: ' + connection.id);
-        //         })
-        //         .catch(error => {
-        //             console.log('> ' + error.name + ': ' + error.message);
-        //         });
-        // });
-
         presentationRequest.addEventListener('connectionavailable', function (event) {
             presentationConnection = event.connection;
             presentationConnection.addEventListener('close', function () {
@@ -46,24 +24,35 @@
             });
         });
 
-        document.querySelector('#sendMessage').addEventListener('click', function () {
+        function start() {
+            console.log('Starting presentation request...');
+            presentationRequest.start()
+                .then(connection => {
+                    console.log('> Connected to ' + connection.url + ', id: ' + connection.id);
+                })
+                .catch(error => {
+                    console.log('> ' + error.name + ': ' + error.message);
+                });
+        }
+
+        function sendMessage() {
             let message = "Hello,World!"
             let lang = "en-US"
             console.log('Sending "' + message + '"...');
             presentationConnection.send(JSON.stringify({ message, lang }));
-        });
+        }
 
-        document.querySelector('#close').addEventListener('click', function () {
+        function close() {
             console.log('Closing connection...');
             presentationConnection.close();
-        });
+        }
 
-        document.querySelector('#terminate').addEventListener('click', function () {
+        function terminate() {
             console.log('Terminating connection...');
             presentationConnection.terminate();
-        });
+        }
 
-        document.querySelector('#reconnect').addEventListener('click', () => {
+        function reconnect() {
             const presentationId = document.querySelector('#presentationId').value.trim();
 
             presentationRequest.reconnect(presentationId)
@@ -73,7 +62,7 @@
                 .catch(error => {
                     console.log('Presentation.reconnect() error, ' + error.name + ': ' + error.message);
                 });
-        });
+        }
 
         /* Availability monitoring */
 
@@ -94,10 +83,10 @@
 
 <body>
     <h2>分屏投射测试</h2>
-    <button id="start" onclick="start()">选择投射屏幕</button>
-    <button id="sendMessage">发送消息</button>
-    <button id="close">关闭投射</button>
-    <button id="terminate">终止投射</button>
+    <button onclick="start()">选择投射屏幕</button>
+    <button onclick="sendMessage()">发送消息</button>
+    <button onclick="close()">关闭投射</button>
+    <button onclick="terminate()">终止投射</button>
 </body>
 
 </html>
