@@ -12,7 +12,7 @@
         let presentationConnection;
 
         function start() {
-            log('Starting presentation request...');
+            console.log('Starting presentation request...');
             presentationRequest.start()
                 .then(connection => {
                     console.log('> Connected to ' + connection.url + ', id: ' + connection.id);
